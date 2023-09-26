@@ -1,61 +1,77 @@
-let books = ["اثر مرکب ", "قدرت عادت", "قلعه ی حیوانات", "خودت را به فنا نده"];
+let books = JSON.parse(localStorage.getItem("books")) || [];
+
+let addBookBtn = document.querySelector("#add-book .button");
+let searchInp = document.querySelector("#search-books input");
+
+let hideCheckBox = document.querySelector("#hide input[type=checkbox]");
+// get all books
 let bookParent = document.querySelector("#book-list ul");
 
-// let ul = document.createElement("ul");
+fetchBooks();
 
-function fetchBooks(searchedBook) {
-  let getBooks = searchedBook === undefined ? books : searchedBook;
+function fetchBooks(filtered) {
+
   bookParent.innerHTML = "";
 
-  for (let index = 0; index < getBooks.length; index++) {
+  for (let i = 0; i < books.length; i++) {
     let lis = document.createElement("li");
     let title = document.createElement("span");
     let deleteButton = document.createElement("span");
-    lis.setAttribute("item-id", index);
+    lis.setAttribute("item-id", i);
+    lis.style.display = "block";
     deleteButton.innerHTML = "حذف";
     deleteButton.classList = "delete";
-    title.innerHTML = `${getBooks[index]}`;
+    title.innerHTML = `${books[i]}`;
     title.classList = "name";
     lis.appendChild(deleteButton);
     lis.appendChild(title);
     bookParent.appendChild(lis);
     bookParent.appendChild(lis);
-  }
-  let booksLis = bookParent.querySelectorAll("li");
 
-  for (let index = 0; index < booksLis.length; index++) {
-    booksLis[index].addEventListener("click", function (e) {
-      e.preventDefault();
-      e.target.parentNode.remove();
-      deleteFunction(this.getAttribute("item-id"));
+    // delete book section
+    deleteButton.addEventListener("click", function (e) {
+      let itemId = this.parentElement.getAttribute("item-id");
+      this.parentElement.remove();
+      deleteBook(itemId);
     });
   }
 }
 
-function deleteFunction(itemId) {
-  books.splice(books.indexOf(itemId) + 1, 1);
-  console.log(books);
-  fetchBooks();
+//   console.log(bookLstParent);
+
+function deleteBook(item) {
+  books.splice(books.indexOf(item), 1);
+  localStorage.setItem("books", JSON.stringify(books));
 }
 
-let addBookBtn = document.querySelector("#add-book a");
+// add book section
 
 addBookBtn.addEventListener("click", function (e) {
-  e.preventDefault();
-  let addBookInputVal = document.querySelector("#add-book input").value;
-
-  books.push(addBookInputVal);
+  let addBookInp = document.querySelector("#add-book input[type=text]").value;
+  books.push(addBookInp);
+  localStorage.setItem("books", JSON.stringify(books));
   fetchBooks();
 });
 
-let searchInput = document.querySelector('#search-books input[type="text"]');
-searchInput.addEventListener("keyup", function (e) {
-  if (searchInput.value === "") {
-    return fetchBooks();
-  }
-  let flt = books.filter((item) => item.includes(searchInput.value));
+//search books section
 
-  fetchBooks(flt);
+searchInp.addEventListener("keyup", function () {
+  let ntFound = document.querySelector("#page-banner p");
+  for (const li of bookParent.children) {
+    li.style.display = "none";
+    if (li.querySelector(".name").textContent.includes(this.value)) {
+      li.style.display = "block";
+      ntFound.style.display = "none";
+    } else {
+      ntFound.style.display = "block";
+      ntFound.innerHTML = "Not Found!";
+    }
+  }
 });
 
-fetchBooks();
+//hide books section
+
+hideCheckBox.addEventListener("change", function (e) {
+  let activity = e.target.checked ? "none" : "block";
+  bookParent.style.display = activity;
+});
