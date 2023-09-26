@@ -70,8 +70,8 @@ h1, h2{
 #book-list li{
     padding: 20px 7px 20px 7px;
     border-right: 5px solid #ddd;
-    margin: 20px 10px;
-
+    margin:  10px;
+height: 20px;
 }
 
 #book-list li:hover{
